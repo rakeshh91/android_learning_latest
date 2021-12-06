@@ -1,0 +1,48 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MergeRootFrame">
+    
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarNewsPagedList"
+        style="@style/Widget.MaterialComponents.AppBarLayout.Surface"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Material.AppBarOverlay">
+        
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarNewsPagedList"
+            style="@style/Widget.MaterialComponents.Toolbar.Surface"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@null"
+            app:popupTheme="@style/Material.PopupOverlay"
+            app:title="News Feed" />
+    
+    </com.google.android.material.appbar.AppBarLayout>
+    
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBarLoadingNewsPagedList"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:max="0"
+        android:visibility="gone" />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewNewsPagedList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

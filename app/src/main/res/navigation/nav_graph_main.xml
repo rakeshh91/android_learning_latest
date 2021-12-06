@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/newsPagedListFragment">
+    
+    <fragment
+        android:id="@+id/newsPagedListFragment"
+        android:name="com.rakesh.newsappsample.presentation.newsfeed.NewsPagedListFragment"
+        android:label="NewsPagedListFragment" />
+    
+    <fragment
+        android:id="@+id/newsListFragment"
+        android:name="com.rakesh.newsappsample.presentation.newsfeed.NewsListFragment"
+        android:label="NewsListFragment" />
+    
+    <fragment
+        android:id="@+id/newsPaged3ListFragment"
+        android:name="com.rakesh.newsappsample.presentation.newsfeed.paging3ui.NewsPaging3ListFragment"
+        android:label="NewsPaged3ListFragment" />
+
+</navigation>
