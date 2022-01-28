@@ -8,11 +8,16 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.rakesh.newsappsample.R
 import com.rakesh.newsappsample.databinding.FragmentNewsListBinding
 import com.rakesh.newsappsample.domain.misc.Error
 import com.rakesh.newsappsample.presentation.util.ResponseState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -41,7 +46,12 @@ class NewsListFragment : Fragment(R.layout.fragment_news_list), NewsListItemView
 
         newsListAdapter = NewsListAdapter(this)
         binding.recyclerViewNewsList.adapter = newsListAdapter
-        newsViewModel.fetchNewsFeedByPage(1, 25)
+
+        //Live data
+        //newsViewModel.fetchNewsFeedByPage(1, 25)
+
+        //Flow
+        newsViewModel.fetchNewsFeedByPageFlow(1, 25)
     }
 
     override fun onDestroyView() {
@@ -50,7 +60,7 @@ class NewsListFragment : Fragment(R.layout.fragment_news_list), NewsListItemView
     }
 
     private fun initObservers() {
-        newsViewModel.newsFeedByPage.observe(viewLifecycleOwner, {
+        newsViewModel.newsFeedByPage.observe(viewLifecycleOwner) {
             when (it) {
                 is ResponseState.Loading -> showProgressLoading(it.loading)
                 is ResponseState.Failure -> {
@@ -67,7 +77,27 @@ class NewsListFragment : Fragment(R.layout.fragment_news_list), NewsListItemView
                     newsListAdapter.submitList(it.data)
                 }
             }
-        })
+        }
+
+        newsViewModel.newsFeedByPageFlow.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .onEach { state ->
+                when (state) {
+                    is ResponseState.Loading -> showProgressLoading(state.loading)
+                    is ResponseState.Failure -> {
+                        showProgressLoading(false)
+                        if (state.error is Error.NoConnectivity) {
+                            Toast.makeText(context, "Network is not available", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    is ResponseState.Success -> {
+                        Timber.d("Result count = ${state.data.size}")
+                        showProgressLoading(false)
+                        binding.recyclerViewNewsList.isVisible = true
+
+                        newsListAdapter.submitList(state.data)
+                    }
+                }
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun showProgressLoading(isLoading: Boolean) {

@@ -6,18 +6,22 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.rakesh.newsappsample.domain.misc.PaginationData
 import com.rakesh.newsappsample.domain.model.newsfeed.NewsArticle
+import com.rakesh.newsappsample.domain.usecase.newsfeed.GetNewsFeedFlowUseCase
 import com.rakesh.newsappsample.domain.usecase.newsfeed.GetNewsFeedUseCase
 import com.rakesh.newsappsample.domain.usecase.newsfeed.GetPagedNewsFeedUseCase
 import com.rakesh.newsappsample.presentation.base.BaseViewModel
 import com.rakesh.newsappsample.presentation.util.ResponseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class NewsFeedViewModel @Inject constructor(
     private val getPagedNewsFeedUseCase: GetPagedNewsFeedUseCase,
-    private val getNewsFeedUseCase: GetNewsFeedUseCase
+    private val getNewsFeedUseCase: GetNewsFeedUseCase,
+    private val getNewsFeedFlowUseCase: GetNewsFeedFlowUseCase
 ) : BaseViewModel() {
 
     /**
@@ -53,6 +57,23 @@ class NewsFeedViewModel @Inject constructor(
             getNewsFeedUseCase,
             GetNewsFeedUseCase.Params(page, pageSize),
             newsfeedResponseState
+        )
+    }
+
+    //-----------------------------------------------------------------------------------------------------
+    /**
+     * Default way of getting Flow data from remote + db
+     */
+
+    private val newsfeedFlowResponseState by lazy { MutableStateFlow<ResponseState<List<NewsArticle>>>(ResponseState.Success(emptyList())) }
+
+    val newsFeedByPageFlow: StateFlow<ResponseState<List<NewsArticle>>> = newsfeedFlowResponseState
+
+    fun fetchNewsFeedByPageFlow(page: Int, pageSize: Int) {
+        fetchFlowData(
+            getNewsFeedFlowUseCase,
+            GetNewsFeedFlowUseCase.Params(page, pageSize),
+            newsfeedFlowResponseState
         )
     }
 }
