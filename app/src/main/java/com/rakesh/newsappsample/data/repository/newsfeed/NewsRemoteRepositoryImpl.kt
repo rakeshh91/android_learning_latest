@@ -7,6 +7,8 @@ import com.rakesh.newsappsample.data.repository.base.BaseRemoteRepository
 import com.rakesh.newsappsample.domain.misc.Result
 import com.rakesh.newsappsample.domain.model.newsfeed.NewsArticle
 import com.rakesh.newsappsample.domain.repository.newsfeed.NewsRemoteRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,5 +23,16 @@ class NewsRemoteRepositoryImpl @Inject constructor(
             { newsService.getTopNewsList(page = page, pageSize = pageSize) },
             { NewsListRemoteResponseMapper(it).map() }
         )
+    }
+
+    override suspend fun getNewsListFlow(page: Int, pageSize: Int): Flow<Result<List<NewsArticle>>> {
+        return flow {
+            emit(
+                processRequest(
+                    { newsService.getTopNewsList(page = page, pageSize = pageSize) },
+                    { NewsListRemoteResponseMapper(it).map() }
+                )
+            )
+        }
     }
 }
